@@ -615,7 +615,7 @@ class StoryViewState extends State<StoryView> with TickerProviderStateMixin {
         children: <Widget>[
           IndexedStack(
             index: this._currentView < 0
-                ? this.widget.storyItems.length
+                ? this.widget.storyItems.length - 1
                 : this._currentView,
             children: this.widget.storyItems.map((e) => e.view).toList(),
           ),
