@@ -642,8 +642,10 @@ class StoryViewState extends State<StoryView> with TickerProviderStateMixin {
             ),
           ),
           Align(
-              alignment: Alignment.centerRight,
-              heightFactor: 1,
+            alignment: Alignment.centerRight,
+            heightFactor: 1,
+            child: SizedBox(
+              width: 70,
               child: GestureDetector(
                 onTapDown: (details) {
                   widget.controller.pause();
@@ -693,7 +695,9 @@ class StoryViewState extends State<StoryView> with TickerProviderStateMixin {
 
                         verticalDragInfo = null;
                       },
-              )),
+              ),
+            ),
+          ),
           Align(
             alignment: Alignment.centerLeft,
             heightFactor: 1,
