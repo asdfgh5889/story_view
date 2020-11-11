@@ -430,9 +430,7 @@ class StoryViewState extends State<StoryView> with TickerProviderStateMixin {
   StoryItem get _currentStory =>
       widget.storyItems.firstWhere((it) => !it.shown, orElse: () => null);
 
-  Widget get _currentView => widget.storyItems
-      .firstWhere((it) => !it.shown, orElse: () => widget.storyItems.last)
-      .view;
+  int get _currentView => widget.storyItems.indexWhere((it) => !it.shown);
 
   @override
   void initState() {
@@ -615,7 +613,12 @@ class StoryViewState extends State<StoryView> with TickerProviderStateMixin {
       color: Colors.white,
       child: Stack(
         children: <Widget>[
-          _currentView,
+          IndexedStack(
+            index: this._currentView < 0
+                ? this.widget.storyItems.length
+                : this._currentView,
+            children: this.widget.storyItems.map((e) => e.view).toList(),
+          ),
           Align(
             alignment: widget.progressPosition == ProgressPosition.top
                 ? Alignment.topCenter
