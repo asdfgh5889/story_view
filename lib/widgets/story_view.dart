@@ -371,6 +371,8 @@ class StoryView extends StatefulWidget {
   /// each time the full story completes when [repeat] is set to `true`.
   final VoidCallback onComplete;
 
+  final int currentIndex;
+
   /// Callback for when a vertical swipe gesture is detected. If you do not
   /// want to listen to such event, do not provide it. For instance,
   /// for inline stories inside ListViews, it is preferrable to not to
@@ -397,6 +399,7 @@ class StoryView extends StatefulWidget {
   StoryView({
     @required this.storyItems,
     @required this.controller,
+    @required this.currentIndex,
     this.onComplete,
     this.onStoryShow,
     this.progressPosition = ProgressPosition.top,
@@ -422,15 +425,14 @@ class StoryViewState extends State<StoryView> with TickerProviderStateMixin {
   AnimationController _animationController;
   Animation<double> _currentAnimation;
   Timer _nextDebouncer;
-
+  int _currentIndex;
   StreamSubscription<PlaybackState> _playbackSubscription;
 
   VerticalDragInfo verticalDragInfo;
 
-  StoryItem get _currentStory =>
-      widget.storyItems.firstWhere((it) => !it.shown, orElse: () => null);
+  StoryItem get _currentStory => widget.storyItems[this._currentIndex];
 
-  int get _currentView => widget.storyItems.indexWhere((it) => !it.shown);
+  int get _currentView => this._currentIndex;
 
   @override
   void initState() {
@@ -438,16 +440,8 @@ class StoryViewState extends State<StoryView> with TickerProviderStateMixin {
 
     // All pages after the first unshown page should have their shown value as
     // false
-
-    final firstPage = widget.storyItems.firstWhere((it) {
-      return !it.shown;
-    }, orElse: () {
-      widget.storyItems.forEach((it2) {
-        it2.shown = false;
-      });
-
-      return null;
-    });
+    this._currentIndex = this.widget.currentIndex;
+    final firstPage = widget.storyItems[this._currentIndex];
 
     if (firstPage != null) {
       final lastShownPos = widget.storyItems.indexOf(firstPage);
@@ -571,6 +565,7 @@ class StoryViewState extends State<StoryView> with TickerProviderStateMixin {
 
       _beginPlay();
     }
+    setState(() => this._currentIndex -= 1);
   }
 
   void _goForward() {
@@ -590,6 +585,7 @@ class StoryViewState extends State<StoryView> with TickerProviderStateMixin {
       // this is the last page, progress animation should skip to end
       _animationController.animateTo(1.0, duration: Duration(milliseconds: 10));
     }
+    setState(() => this._currentIndex += 1);
   }
 
   void _clearDebouncer() {
